@@ -3,13 +3,13 @@
 int rec_width = 20;
 int rec_height = 20;
 
-void RenderDisplay(int height, int width,int display[height][width]){
+void RenderDisplay(int height, int width,chip8* context){
    BeginDrawing();
    ClearBackground(RAYWHITE);
    SetTraceLogLevel(LOG_FATAL); 
    for(int i =0; i<height;i++){
                 for(int j =0; j<width;j++){
-                    if(display[i][j] == 1){
+                    if(context->display[i][j] == 1){
                         DrawRectangle(j*rec_width,i*rec_width,rec_width,rec_height,MAROON);
                     }
                     else 
@@ -26,47 +26,36 @@ int main(int argc, char** argv){
     //--------------------------------------------------------------------------------------
     const int screenWidth = 1280;
     const int screenHeight = 640;
+    
     if(argc == 1){
-        printf("Usage:\nchip8-interpreter <rom>\n");
+        printf("Usage:\nchip8-interpreter <rom_path>\n");
         return 1;        
     }
-    InitWindow(screenWidth, screenHeight, "CHIP-8");
-    SetTargetFPS(1000);
+
     chip8* context = InitChip8();
+    
     if(load_rom(argv[1],context) == 0){
-        perror("ROM LOADING FAILED");
-        return 0;
+        return 1;
     }
+
+    InitWindow(screenWidth, screenHeight, "CHIP-8");
     //--------------------------------------------------------------------------------------
 
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-
-       //if(IsKeyDown(KEY_SPACE)){
         uint16_t opcode = Fetch(context);
+
         if(opcode == 0){
             perror("ERROR FETCHING INSTRUCTION");
             return 0;
         }
+
         DecodeAndExecute(context,opcode);
         DecrementDelayTimer(context);
         DecrementSoundTimer(context);
-      // }
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-        for(int i =0; i<32;i++){
-            for(int j =0; j<64;j++){
-                if(context->display[i][j] == 1){
-                    DrawRectangle(j*rec_width,i*rec_width,rec_width,rec_height,MAROON);
-                    //DrawRectangleLines(j*rec_width,i*rec_width,rec_width,rec_height,GRAY);
-                }
-                else 
-                    DrawRectangle(j*rec_width,i*rec_width,rec_width,rec_height,RAYWHITE);
-                    //DrawRectangleLines(j*rec_width,i*rec_width,rec_width,rec_height,GRAY);
-                }
-    }
-    EndDrawing();
+        RenderDisplay(32,64,context);
+
     }
 
     // De-Initialization
