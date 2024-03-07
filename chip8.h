@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <raylib.h>
+#include <string.h>
 
 
 typedef struct chip8{
@@ -381,8 +382,8 @@ void loadfonts(chip8* context){
     context->memory[79] = 0x80;
 }
 
-uint8_t load_rom(char* name , chip8* context ){
-    FILE* rom = fopen("C:\\Users\\User\\Desktop\\cose\\Progetti\\CHIP-8\\roms\\tetris.ch8","rb"); //TODO LEVA STA MERDA 
+uint8_t load_rom(char* rom_path , chip8* context ){
+    FILE* rom = fopen(rom_path,"rb"); //TODO LEVA STA MERDA 
     int rom_size = 0;
     if(rom == NULL){
         perror("ROM LOADING FAILED");
@@ -391,7 +392,7 @@ uint8_t load_rom(char* name , chip8* context ){
     fseek(rom, 0, SEEK_END);
     rom_size = ftell(rom);
     rewind(rom);
-    int r = fread(context->memory + 512,1,rom_size,rom);
+    fread(context->memory + 512,1,rom_size,rom);
     return 1;
 }
 
@@ -443,7 +444,7 @@ uint16_t Fetch(chip8* context){
     
 }
 
-uint8_t DecodeAndExecute(chip8* context,uint16_t instruction){
+void DecodeAndExecute(chip8* context,uint16_t instruction){
     uint8_t op; //First Nibble  --> extract  with & 0xF000
     uint8_t x;  //Second Nibble --> extract with & 0x0F00
     uint8_t y; //Third Nibble   --> extract with & 0x00F0
@@ -575,6 +576,7 @@ uint8_t DecodeAndExecute(chip8* context,uint16_t instruction){
                 break;
         default: printf("ERROR BAD OP\n"); 
     }
+        
 
 }
 

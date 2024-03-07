@@ -1,0 +1,1 @@
+gcc -Wall -o chip8-interpreter `pkg-config raylib --cflags --libs` render.c

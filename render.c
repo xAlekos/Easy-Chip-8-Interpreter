@@ -3,7 +3,7 @@
 int rec_width = 20;
 int rec_height = 20;
 
-uint8_t RenderDisplay(int height, int width,int display[height][width]){
+void RenderDisplay(int height, int width,int display[height][width]){
    BeginDrawing();
    ClearBackground(RAYWHITE);
    SetTraceLogLevel(LOG_FATAL); 
@@ -21,16 +21,19 @@ uint8_t RenderDisplay(int height, int width,int display[height][width]){
 
 
 
-int main(){
+int main(int argc, char** argv){
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 1280;
     const int screenHeight = 640;
-
+    if(argc == 1){
+        printf("Usage:\nchip8-interpreter <rom>\n");
+        return 1;        
+    }
     InitWindow(screenWidth, screenHeight, "CHIP-8");
-    SetTargetFPS(500);
+    SetTargetFPS(1000);
     chip8* context = InitChip8();
-    if(load_rom("a",context) == 0){
+    if(load_rom(argv[1],context) == 0){
         perror("ROM LOADING FAILED");
         return 0;
     }
